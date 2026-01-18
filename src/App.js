@@ -1,8 +1,11 @@
 import GlobalStyle from './styles/global';
 import styled from 'styled-components';
 import Form from './components/Form';
+import { useState } from 'react';
+import { useEffect } from 'react';
 import Grid from './components/Grid.js';
 import { Toaster, toast } from 'react-hot-toast';
+import axios from 'axios';
 //import "react-toastify/dist/ReactToastify.css";
 
 
@@ -19,12 +22,29 @@ const Title = styled.h2``;
 
 
 function App() {
+
+  const [users, setUsers] = useState([]);
+  const [onEdit, setOnEdit] = useState(null);
+
+  const getUsers = async () => {
+    try {
+      const res = await axios.get('http://localhost:8800');
+      setUsers(res.data.sort((a, b) => (a.name > b.name ? 1 : -1)));
+    } catch (error) {
+      toast.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, [setUsers]);
+
   return (
     <>
       <Container>
         <Title>Usuários</Title>
         <Form />
-        <Grid />
+        <Grid users={users}/>
       </Container>
 
       <Toaster position="bottom-left" />
