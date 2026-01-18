@@ -1,6 +1,7 @@
 import GlobalStyle from './styles/global';
 import styled from 'styled-components';
 import Form from './components/Form';
+import Grid from './components/Grid.js';
 import { Toaster, toast } from 'react-hot-toast';
 //import "react-toastify/dist/ReactToastify.css";
 
@@ -23,8 +24,9 @@ function App() {
       <Container>
         <Title>Usuários</Title>
         <Form />
+        <Grid />
       </Container>
-      
+
       <Toaster position="bottom-left" />
       <GlobalStyle />
     </>
