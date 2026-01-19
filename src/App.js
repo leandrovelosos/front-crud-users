@@ -29,9 +29,10 @@ function App() {
   const getUsers = async () => {
     try {
       const res = await axios.get('http://localhost:8800');
-      setUsers(res.data.sort((a, b) => (a.name > b.name ? 1 : -1)));
+      console.log(res.data);
+      setUsers(res.data.sort((a, b) => (a.nome > b.nome ? 1 : -1)));
     } catch (error) {
-      toast.error(error);
+      toast.error(error.response?.data || "Erro ao buscar usuários");
     }
   };
 
@@ -43,8 +44,8 @@ function App() {
     <>
       <Container>
         <Title>Usuários</Title>
-        <Form />
-        <Grid users={users}/>
+        <Form onEdit={onEdit} setOnEdit={setOnEdit} getUsers={getUsers}/>
+        <Grid users={users} setUsers={setUsers} setOnEdit={setOnEdit}/>
       </Container>
 
       <Toaster position="bottom-left" />

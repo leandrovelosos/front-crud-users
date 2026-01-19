@@ -43,20 +43,44 @@ export const Td = styled.td`
     text-align: ${(props) => (props.aligncenter ? "center" : "start")};
     width: ${(props) => (props.width ? props.width : "auto")};
 
-    @media (max-width: 500p){
+    @media (max-width: 500px){
         ${(props) => props.onlyWeb && "display: none"}
     }
 `;
 
 
-const Grid = ({ users }) => {
+
+
+const Grid = ({ users, setUsers, setOnEdit }) => {
+
+    const handleEdit = (item) => {
+        setOnEdit(item);
+    };
+
+    const handleDelete = async (id) => {
+        await axios 
+            .delete("http://localhost:8800/" + id)
+            .then(({ data }) => {
+            const newArray = users.filter((user) => user.id !== id);
+
+            setUsers(newArray);
+            toast.success(data);
+        })
+        .catch((err) => toast.error(err.response?.data || "Erro ao excluir"));
+
+
+        setOnEdit(null);
+
+    }; 
+
+
     return (
         <Table>
             <Thead>
                 <Tr>
                     <Th>Nome</Th>
                     <Th>E-mail</Th>
-                    <Th onlyWeb>Telefone</Th>
+                    <Th>Telefone</Th>
                     <Th></Th>
                     <Th></Th>
                 </Tr>
@@ -67,12 +91,12 @@ const Grid = ({ users }) => {
                     <Tr key={i}>
                         <Td width="30%">{item.nome}</Td>
                         <Td width="30%">{item.email}</Td>
-                        <Td width="20%" onlyWeb>{item.telefone}</Td>
+                        <Td width="20%">{item.fone}</Td>
                         <Td aligncenter width="5%">
-                            <FaEdit/>
+                            <FaEdit onClick={() => handleEdit(item)}/>
                         </Td>
                         <Td aligncenter width="5%">
-                            <FaTrash/>
+                            <FaTrash onClick={()=> handleDelete(item.id)}/>
                         </Td>
                     </Tr>
                 ))}

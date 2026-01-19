@@ -1,7 +1,10 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import styled from "styled-components";
+import { toast } from "react-hot-toast";
+import axios from "axios";
 
 const FormContainer = styled.form`
+    
     display: flex;
     align-items: flex-end;
     gap: 10px;
@@ -37,11 +40,79 @@ const Button = styled.button`
     height: 42px;
 `;
 
-const Form = ({ onEdit }) => {
+const Form = ({ onEdit, setOnEdit, getUsers }) => {
     const ref = useRef();
 
+    useEffect(() => {
+        if (onEdit) {
+            const user = ref.current;
+
+            user.nome.value = onEdit.nome;
+            user.email.value = onEdit.email;
+            user.fone.value = onEdit.fone;
+            user.data_nascimento.value = onEdit.data_nascimento;
+        }
+    }, [onEdit]);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!ref.current) return;
+
+        const user = ref.current;
+
+        if (
+            !user.nome.value ||
+            !user.email.value ||
+            !user.fone.value ||
+            !user.data_nascimento.value
+        ) {
+            toast("Preencha todos os campos!", { icon: "⚠️" });
+            return;
+
+        }
+
+        try {
+            if (onEdit) {
+                await axios.put(
+                    "http://localhost:8800/" + onEdit.id,
+                    {
+                        nome: user.nome.value,
+                        email: user.email.value,
+                        fone: user.fone.value,
+                        data_nascimento: user.data_nascimento.value,
+                    }
+                );
+                toast.success("Usuário atualizado com sucesso!");
+            } else {
+                await axios.post(
+                    "http://localhost:8800",
+                    {
+                        nome: user.nome.value,
+                        email: user.email.value,
+                        fone: user.fone.value,
+                        data_nascimento: user.data_nascimento.value,
+                    }
+                );
+                toast.success("Usuário cadastrado com sucesso!");
+            }
+
+            user.nome.value = "";
+            user.email.value = "";
+            user.fone.value = "";
+            user.data_nascimento.value = "";
+
+            setOnEdit(null);
+            getUsers();
+
+        } catch (err) {
+            toast.error(err.response?.data || "Erro ao salvar");
+        }
+    };
+
+
     return (
-        <FormContainer ref={ref}>
+        <FormContainer ref={ref} onSubmit={handleSubmit}>
             <InputArea>
                 <Label>Nome</Label>
                 <Input name="nome" />
@@ -67,4 +138,4 @@ const Form = ({ onEdit }) => {
     )
 };
 
-export default Form;
+export default Form; 
