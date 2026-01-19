@@ -4,7 +4,6 @@ import { toast } from "react-hot-toast";
 import axios from "axios";
 
 const FormContainer = styled.form`
-    
     display: flex;
     align-items: flex-end;
     gap: 10px;
