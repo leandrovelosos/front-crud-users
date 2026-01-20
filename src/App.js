@@ -23,14 +23,25 @@ const Title = styled.h2``;
 
 function App() {
 
+  //console.log("API:", process.env.REACT_APP_API_URL);
+
+
   const [users, setUsers] = useState([]);
   const [onEdit, setOnEdit] = useState(null);
 
   const getUsers = async () => {
     try {
-      const res = await axios.get('http://localhost:8800');
-      console.log(res.data);
-      setUsers(res.data.sort((a, b) => (a.nome > b.nome ? 1 : -1)));
+      console.log("Chamando API...");
+      const res = await axios.get(process.env.REACT_APP_API_URL);
+
+     // console.log("Resposta bruta:", res.data);
+      //console.log("É array?", Array.isArray(res.data));
+
+      setUsers(
+        Array.isArray(res.data)
+          ? res.data.sort((a, b) => (a.nome > b.nome ? 1 : -1))
+          : []
+      );
     } catch (error) {
       toast.error(error.response?.data || "Erro ao buscar usuários");
     }
@@ -44,8 +55,8 @@ function App() {
     <>
       <Container>
         <Title>Gerenciamento de Usuários</Title>
-        <Form onEdit={onEdit} setOnEdit={setOnEdit} getUsers={getUsers}/>
-        <Grid users={users} setUsers={setUsers} setOnEdit={setOnEdit}/>
+        <Form onEdit={onEdit} setOnEdit={setOnEdit} getUsers={getUsers} />
+        <Grid users={users} setUsers={setUsers} setOnEdit={setOnEdit} />
       </Container>
 
       <Toaster position="bottom-left" />
@@ -55,3 +66,4 @@ function App() {
 }
 
 export default App;
+
