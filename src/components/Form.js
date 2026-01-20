@@ -43,13 +43,17 @@ const Form = ({ onEdit, setOnEdit, getUsers }) => {
     const ref = useRef();
 
     useEffect(() => {
-        if (onEdit) {
-            const user = ref.current;
+        if (!onEdit) return;
 
-            user.nome.value = onEdit.nome;
-            user.email.value = onEdit.email;
-            user.fone.value = onEdit.fone;
-            user.data_nascimento.value = onEdit.data_nascimento;
+        const user = ref.current;
+
+        user.nome.value = onEdit.nome;
+        user.email.value = onEdit.email;
+        user.fone.value = onEdit.fone;
+
+        if (onEdit.data_nascimento) {
+            const data = new Date(onEdit.data_nascimento);
+            user.data_nascimento.value = data.toISOString().split("T")[0];
         }
     }, [onEdit]);
 
