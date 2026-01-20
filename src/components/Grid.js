@@ -2,7 +2,9 @@ import React from "react";
 import axios from "axios";
 import styled from "styled-components";
 import { FaTrash, FaEdit } from "react-icons/fa";
-import { Toaster, toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
+
+/* ================== TABLE ================== */
 
 const Table = styled.table`
     width: 100%;
@@ -10,46 +12,45 @@ const Table = styled.table`
     padding: 20px;
     box-shadow: 0px 0px 5px #ccc;
     border-radius: 5px;
-    max-width: 800px;
-    margin: 20px auto;
-    word-break: break-all;
+    table-layout: fixed;
 `;
 
-export const Thead = styled.thead`
+/* ================== STRUCTURE ================== */
 
-`;
+export const Thead = styled.thead``;
+export const Tbody = styled.tbody``;
+export const Tr = styled.tr``;
 
-export const Tbody = styled.tbody`
-
-`;
-
-export const Tr = styled.tr`
-
-`;
+/* ================== HEADERS ================== */
 
 export const Th = styled.th`
-    text-align: start;
+    text-align: left;
     border-bottom: inset;
     padding-bottom: 5px;
-
-
-    @media (max-width:500px){
-        ${(props) => props.onlyWeb && "display:none;"}
-    }
 `;
+
+/* ================== CELLS ================== */
 
 export const Td = styled.td`
-    padding-top: 15px;
-    text-align: ${(props) => (props.aligncenter ? "center" : "start")};
-    width: ${(props) => (props.width ? props.width : "auto")};
+    padding: 15px 8px 0 8px;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: ${(props) => props.width || "auto"};
+`;
 
-    @media (max-width: 500px){
-        ${(props) => props.onlyWeb && "display: none"}
+export const TdAction = styled.td`
+    width: 36px;
+    text-align: center;
+    white-space: nowrap;
+
+    svg {
+        cursor: pointer;
     }
 `;
 
-
-
+/* ================== COMPONENT ================== */
 
 const Grid = ({ users, setUsers, setOnEdit }) => {
 
@@ -58,53 +59,48 @@ const Grid = ({ users, setUsers, setOnEdit }) => {
     };
 
     const handleDelete = async (id) => {
-        await axios 
-            .delete("http://localhost:8800/" + id)
-            .then(({ data }) => {
-            const newArray = users.filter((user) => user.id !== id);
-
-            setUsers(newArray);
+        try {
+            const { data } = await axios.delete("http://localhost:8800/" + id);
+            setUsers(users.filter((user) => user.id !== id));
             toast.success(data);
-        })
-        .catch((err) => toast.error(err.response?.data || "Erro ao excluir"));
-
+        } catch (err) {
+            toast.error(err.response?.data || "Erro ao excluir");
+        }
 
         setOnEdit(null);
-
-    }; 
-
+    };
 
     return (
         <Table>
             <Thead>
                 <Tr>
-                    <Th>Nome</Th>
-                    <Th>E-mail</Th>
-                    <Th>Telefone</Th>
-                    <Th></Th>
-                    <Th></Th>
+                    <Th style={{ width: "40%" }}>Nome</Th>
+                    <Th style={{ width: "40%" }}>E-mail</Th>
+                    <Th style={{ width: "15%" }}>Telefone</Th>
+                    <Th style={{ width: "36px" }}></Th>
+                    <Th style={{ width: "36px" }}></Th>
                 </Tr>
             </Thead>
 
             <Tbody>
-                {users.map((item, i) => (
-                    <Tr key={i}>
-                        <Td width="30%">{item.nome}</Td>
-                        <Td width="30%">{item.email}</Td>
-                        <Td width="20%">{item.fone}</Td>
-                        <Td aligncenter width="5%">
-                            <FaEdit onClick={() => handleEdit(item)}/>
-                        </Td>
-                        <Td aligncenter width="5%">
-                            <FaTrash onClick={()=> handleDelete(item.id)}/>
-                        </Td>
+                {users.map((item) => (
+                    <Tr key={item.id}>
+                        <Td width="40%">{item.nome}</Td>
+                        <Td width="40%">{item.email}</Td>
+                        <Td width="15%">{item.fone}</Td>
+
+                        <TdAction>
+                            <FaEdit size={14} onClick={() => handleEdit(item)} />
+                        </TdAction>
+
+                        <TdAction>
+                            <FaTrash size={14} onClick={() => handleDelete(item.id)} />
+                        </TdAction>
                     </Tr>
                 ))}
             </Tbody>
-
         </Table>
     );
 };
-
 
 export default Grid;
